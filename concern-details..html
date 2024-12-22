@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skincare store</title>
+    <link rel="stylesheet" href="concern-details.css"> 
+    <link rel="stylesheet" href="shoppage.css"> 
+
+</head>
+<body id="concern-details">
+  
+  <div class="concern-products-container"></div>
+ 
+ 
+  <section>
+    
+  
+  <div id="skinTypeSelection">
+    
+</section>
+<div id="skinTypeSelection" class="skin-type-container">
+    <h1 id="page-title">Choose Your Skin Type</h1>
+
+    <button class="skin-type-button" data-skin-type="combined-skin">Combined Skin<br>
+      <span class="description">I have an oily T-zone and normal to dry everywhere else.</span>
+  </button><br>
+  <button class="skin-type-button" data-skin-type="oily-skin">Oily Skin <br>
+    <span class="description">My Skin looks shiny and feels sleek to the touch.</span>
+  </button>
+
+    <button class="skin-type-button" data-skin-type="dry-skin">Dry Skin <br>
+        <span class="description">My Skin feels tight and may have a flaky area.</span>
+    </button>
+
+
+    <button class="skin-type-button" data-skin-type="sensitive-skin">Sensitive Skin<br>
+        <span class="description">My Skin becomes easily irritated.</span>
+    </button><br>
+    
+    <button class="skin-type-button" data-skin-type="normal-skin">Normal Skin<br>
+        <span class="description">No signs of tightness and oiliness.</span>
+    </button><br>
+    
+    <button id="next-button">NEXT</button>
+</div>
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+</section>
+
+  
+</section>
+<div id="skinConcernSelection" class="skin-concern-container" style="display: none;">
+    <h1 id="page-title">Choose Your Skin Concern</h1>
+    <div class="skin-concern-buttons">
+      
+        <button class="skin-concern-button" data-concern="acne-prone">Acne Prone & Pimples</button>
+        <button class="skin-concern-button" data-concern="anti-aging">Anti-Aging
+          
+        </button>
+        
+       <button class="skin-concern-button" data-concern="general-skincare">General Skincare</button>
+        <button class="skin-concern-button" data-concern="black-spots">Black Spots</button>
+        <button class="skin-concern-button" data-concern="dark-circles">Dark Circles & Puffiness</button>
+        <button class="skin-concern-button" data-concern="break-outs">Breakouts</button>
+        <button class="skin-concern-button" data-concern="sensitive-skin">Sensitive Skin</button>
+        <button class="skin-concern-button" data-concern="uneven-skintone">Uneven Skintone</button>
+        <button class="skin-concern-button" data-concern="sun-burns">Sun Burns</button>
+       
+   
+       
+
+
+    </div>
+</div>
+
+
+  <script src="shoppage.js"></script>
+ 
+    <script>
+   document.addEventListener("DOMContentLoaded", function () {
+  
+    const skinTypeButtons = document.querySelectorAll(".skin-type-button");
+const nextButton = document.getElementById("next-button");
+const concernButtons = document.querySelectorAll(".skin-concern-button");
+
+const skinTypeContainer = document.querySelector(".skin-type-container");
+const concernContainer = document.querySelector(".skin-concern-container");
+const productsContainer = document.querySelector(".concern-products-container");
+const skinConcernButtonsContainer = document.querySelector(".skin-concern-buttons");
+
+const pageTitle = document.getElementById("page-title");
+
+skinTypeContainer.style.display = "block";
+concernContainer.style.display = "none";
+productsContainer.style.display = "none";
+
+let selectedSkinType = "";
+
+skinTypeButtons.forEach((button) => {
+  button.addEventListener("click", (event) => {
+   
+    const clickedButton = event.currentTarget;
+
+    selectedSkinType = clickedButton.getAttribute("data-skin-type");
+    localStorage.setItem("selectedSkinType", selectedSkinType);
+
+    
+    skinTypeButtons.forEach((btn) => btn.classList.remove("selected"));
+   
+    clickedButton.classList.add("selected");
+  });
+});
+
+
+nextButton.addEventListener("click", () => {
+  if (selectedSkinType) {
+   
+    skinTypeContainer.style.display = "none"; 
+    concernContainer.style.display = "block"; 
+
+    
+    pageTitle.textContent = "Choose Your Skin Concern";
+  } else {
+    alert("Please select a skin type before proceeding.");
+  }
+});
+
+
+concernButtons.forEach((button) => {
+  button.addEventListener("click", (event) => {
+    const concern = event.target.getAttribute("data-concern");
+    localStorage.setItem("selectedConcern", concern);
+
+    
+    concernContainer.style.display = "none"; 
+    productsContainer.style.display = "block"; 
+
+   
+    pageTitle.textContent = `Skin Concern: ${concern.replace("-", " ")}`;
+
+    
+    const filteredProducts = window.products.filter(
+      (product) =>
+        Array.isArray(product.skinConcerns) && product.skinConcerns.includes(concern)
+    );
+
+    displayProductsInSteps(filteredProducts);
+  });
+});
+
+
+function displayProductsInSteps(products) {
+  productsContainer.innerHTML = ""; 
+
+  if (products.length === 0) {
+    productsContainer.innerHTML =
+      "<p>No products found for this skin concern.</p>";
+    return;
+  }
+
+  let stepCount = 1; 
+  products.forEach((product) => {
+    const productStep = document.createElement("div");
+    productStep.classList.add("product-step");
+
+    
+    productStep.innerHTML = `
+      <h2>Step ${stepCount}: ${product.name}</h2>
+      <div class="product">
+        <a href="product.html?slug=${product.slug}">
+          <img src="${product.image}" alt="${product.name}">
+          <p>Price: Ksh ${product.price}</p>
+          
+          ${
+            product.inStock
+              ? ""
+              : '<p class="out-of-stock">Out of Stock</p>'
+          }
+        </a>
+      </div>
+    `;
+
+    productsContainer.appendChild(productStep);
+    stepCount++;
+  });
+}
+});
+
+
+     </script>
+      </body>
+      </html>

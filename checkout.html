@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout</title>
+    <style>
+        .checkout-container { max-width: 600px; margin: 0 auto; }
+        label { display: block; margin: 10px 0 5px; }
+        input, button { width: 100%; padding: 10px; margin: 10px 0; }
+        button { background-color: green; color: white; }
+
+        @media (max-width: 768px) {
+            
+
+        .checkout-container{
+                width:250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="checkout-container">
+        <h1>Checkout</h1>
+
+        <form id="checkout-form">
+            <label for="name">Full Name</label>
+            <input type="text" id="name" required>
+
+            <label for="address">Shipping Address</label>
+            <input type="text" id="address" required>
+
+            <label for="email">Email</label>
+            <input type="email" id="email" required>
+
+            <label for="phone number">Phone Number</label>
+            <input type="number" id="number" required>
+
+
+            <button class="btn" type="submit">Submit Order</button>
+        </form>
+    </div> 
+
+    <!-- Include the EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+
+    <script type="text/javascript">
+        // Initialize EmailJS with your User ID
+        emailjs.init("IdV8ECRve7wIzFehA");  // Replace with your actual User ID from EmailJS
+    </script>
+
+    <script>
+       document.getElementById('checkout-form').addEventListener('submit', function(event) {
+            event.preventDefault();  // Prevent page reload
+
+            // Get user input values
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const address = document.getElementById('address').value;
+            const phonenumber =document.getElementById('number').value;
+
+
+            // Get the cart data from localStorage (if available)
+            const cart = JSON.parse(localStorage.getItem("cart")) || [];
+            const totalPrice = cart.reduce((total, product) => total + product.price * product.quantity, 0);
+
+            // Prepare order details for the email
+            const orderItems = cart.map(item => `${item.name} (x${item.quantity}) - Ksh ${item.price}`).join("\n");
+
+            const message = `New order received!
+            Customer Details:
+        -----------------
+              Name: ${name}
+              Email: ${email}
+            Phone Number: ${phonenumber}
+           Shipping Address: ${address}
+
+               Order Summary:
+             --------------
+             Total Price: Ksh ${totalPrice.toFixed(2)}
+
+             Ordered Items:
+            --------------
+           ${orderItems}
+            `;
+
+
+            const templateParams = {
+                to_name: "Your Name",  // Replace with the actual recipient name
+                from_name: "Flagship Gadgets",  // Sender's name
+                message: message  // The message that contains the order details
+};
+
+
+
+
+            
+
+            // Send the email via EmailJS
+            emailjs.send('service_zbhj49a', 'template_jkgrdvp', templateParams)
+                .then((response) => {
+                    console.log('Order sent successfully!', response.status, response.text);
+                    alert('Order sent successfully!');
+                    
+                    // Optionally, you can clear the cart and redirect the user after successful submission
+                    localStorage.removeItem('cart');
+                    window.location.href = 'shoppage.html';  // Redirect to thank you page
+                })
+                .catch((error) => {
+                    console.error('Failed to send order:', error);
+                    alert('Failed to send order: ' + (error.text || error.message || error));
+                });
+        });
+    </script>
+</body>
+</html>

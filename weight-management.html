@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Filter</title>
+    <style>
+        /* Basic styling for layout */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar {
+            display: flex;
+            background-color:green;
+            padding: 10px;
+        }
+        .navbar a {
+            color: black;
+            padding: 10px;
+            text-decoration: none;
+            margin-right: 100px;
+            justify-content: center;
+        }
+        .navbar a:hover {
+            background-color: #555;
+        }
+        .product-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            padding: 20px;
+            justify-content: center;
+            grid-template-columns: repeat(2, 1fr);
+        }
+        .product-item {
+           
+            
+            overflow: hidden;
+            width: 300px;
+            text-align: center;
+        }
+        .product-item img {
+            max-width: 100%;
+            height: auto;
+            border: none;
+        }
+        .product-details {
+            padding: 10px;
+            background-color: #35ac52;
+            border-radius: 8px;
+        }
+        .product-item:hover{
+            transform: translateY(-5px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="navbar">
+        <a id="nav-nutritional supplements" href="?category=nutritional supplements">Nutritional Supplements</a>
+        <a href="#" id="nav-drinks">Drinks</a>
+        <a href="#" id="nav-skincare">Skincare</a>
+        <a href="#" id="nav-bee-products">Bee Products</a>
+        
+    <a id="nav-weight management" href="#">Weight Management</a>
+
+    </div>
+
+    
+    <div class="product-container" id="product-container">
+        
+    </div>
+
+    <script src="shoppage.js"></script>
+    <script>
+         document.addEventListener("DOMContentLoaded", () => {
+    const productContainer = document.getElementById("product-container");
+
+    // Function to display products based on category
+    function displayProducts(category) {
+        productContainer.innerHTML = ""; // Clear previous products
+
+        
+        const filteredProducts = products.filter(product => product.category === category);
+
+        if (filteredProducts.length === 0) {
+            productContainer.innerHTML = `<p>No products found for category: <strong>${category}</strong></p>`;
+            return;
+        }
+
+        filteredProducts.forEach(product => {
+            const productItem = document.createElement("div");
+            productItem.classList.add("product-item");
+
+            productItem.innerHTML = `
+                <a href="product.html?slug=${product.slug}">
+                    <img src="${product.image}" alt="${product.name}">
+                    <div class="product-details">
+                        <h3>${product.name}</h3>
+                        <p>${product.price}</p>
+                    </div>
+                </a>
+            `;
+
+            productContainer.appendChild(productItem);
+        });
+    }
+
+    // Add event listeners for navbar links
+    document.getElementById("nav-nutritional supplements").addEventListener("click", (e) => {
+        e.preventDefault(); // Prevent default link behavior
+        window.history.pushState({}, '', '?category=nutritional supplements'); // Update the URL
+        displayProducts("nutritional supplements"); // Show products in the "nutritional supplements" category
+    });
+
+    document.getElementById("nav-drinks").addEventListener("click", (e) => {
+        e.preventDefault();
+        window.history.pushState({}, '', '?category=drinks');
+        displayProducts("drinks");
+    });
+
+    document.getElementById("nav-skincare").addEventListener("click", (e) => {
+        e.preventDefault();
+        window.history.pushState({}, '', '?category=skincare');
+        displayProducts("skincare");
+    });
+
+    document.getElementById("nav-bee-products").addEventListener("click", (e) => {
+        e.preventDefault();
+        window.history.pushState({}, '', '?category=bee products');
+        displayProducts("bee products");
+    });
+
+    document.getElementById("nav-weight management").addEventListener("click", (e) => {
+        e.preventDefault();
+        window.history.pushState({}, '', '?category=weight management');
+        displayProducts("weight management");
+    });
+
+    
+    const urlParams = new URLSearchParams(window.location.search);
+   let category = urlParams.get("category");
+   
+    // If no category is found or it's not "nutritional supplements", set default to "nutritional supplements"
+    if (!category || category === "drinks" || category === "") {
+        category = "weight management";
+        window.history.replaceState({}, '', '?category=weight management'); 
+    }
+
+    
+    displayProducts(category);
+});
+    
+
+
+        
+    </script>
+    
+</body>
+</html>

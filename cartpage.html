@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart</title>
+    
+    <style>
+        /* Simple styles for the cart */
+        .cart-container { max-width: 800px; margin: 0 auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 10px; border: 1px solid #ddd; }
+        .btn { padding: 5px 10px; margin: 5px; cursor: pointer; }
+        .checkout-btn { background-color: green; color: white; }
+        .remove-btn { background-color: red; color: white; }
+    </style>
+</head>
+<body>
+    <div class="cart-container">
+        <h1>Your Shopping Cart</h1>
+        <table id="cart-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Cart items will be injected here by JavaScript -->
+            </tbody>
+        </table>
+        <p id="total-cost">Total: Ksh 0</p>
+        <button class="checkout-btn" id="checkout-btn">Proceed to Checkout</button>
+    </div>
+
+    <style>
+        #total-cost{
+            font-size: 50px;
+        }
+
+        
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.2rem; 
+            }
+            table, th, td { 
+                font-size: 0.7rem; 
+            }
+            th, td {
+                padding: 3px; 
+            }
+            .btn, .checkout-btn {
+                font-size: 0.7rem; 
+            }
+            .checkout-btn {
+                width: 100%;
+            }
+        }
+    </style>
+
+    <script>
+      // Function to render the cart items and calculate total cost
+function renderCart() {
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const cartTableBody = document.querySelector("#cart-table tbody");
+    const totalCostElement = document.querySelector("#total-cost"); // Element to display total cost
+
+    if (cart.length === 0) {
+        cartTableBody.innerHTML = "<tr><td colspan='5'>Your cart is empty</td></tr>";
+        totalCostElement.textContent = "Total: Ksh 0"; // Display 0 if the cart is empty
+        return;
+    }
+
+    cartTableBody.innerHTML = "";  // Clear current rows
+    let totalCost = 0;  // Initialize total cost
+
+    // Render cart items and calculate total cost
+    cart.forEach((item, index) => {
+        const row = document.createElement("tr");
+        const itemTotal = item.price * item.quantity; // Calculate total for each item
+        totalCost += itemTotal;  // Add item total to the total cost
+
+        row.innerHTML = `
+            <td>${item.name}</td>
+            <td>Ksh ${item.price}</td>
+            <td>${item.quantity}</td>
+            <td>Ksh ${itemTotal}</td>
+            <td>
+                <button class="btn remove-btn" onclick="removeFromCart(${index})">Remove</button>
+            </td>
+        `;
+        cartTableBody.appendChild(row);
+    });
+
+    
+    totalCostElement.textContent = `Total: Ksh ${totalCost}`;
+}
+
+
+function addToCart(item) {
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    
+    const existingItemIndex = cart.findIndex(cartItem => cartItem.name === item.name);
+    if (existingItemIndex !== -1) {
+        
+        cart[existingItemIndex].quantity += item.quantity;
+    } else {
+        
+        cart.push(item);
+    }
+
+    // Save updated cart to localStorage
+    localStorage.setItem("cart", JSON.stringify(cart));
+
+    // Re-render cart and update total
+    renderCart();
+}
+
+// Function to remove item from cart
+function removeFromCart(index) {
+    const cart = JSON.parse(localStorage.getItem("cart"));
+    cart.splice(index, 1); // Remove the item at the given index
+    localStorage.setItem("cart", JSON.stringify(cart)); // Save updated cart to localStorage
+
+    // Re-render cart and update total
+    renderCart();
+}
+
+// Checkout button listener
+document.getElementById('checkout-btn').addEventListener('click', function() {
+    window.location.href = 'checkout.html';  // Navigate to checkout page
+});
+
+// Load cart when page is loaded
+document.addEventListener('DOMContentLoaded', renderCart);
+
+    </script>
+</body>
+</html>
